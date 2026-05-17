@@ -104,52 +104,52 @@
 <body>
 <div style="max-width:1200px; margin:0 auto">
   <h1>Welcome Card Generator</h1>
-  <p class="subtitle">Заполни поля — карточка обновится автоматически. Затем скачай PNG.</p>
+  <p class="subtitle">Fill in the fields — the card updates automatically. Then download PNG.</p>
   <div class="layout">
     <div class="form-panel">
-      <p class="form-section-title">Данные сотрудника</p>
+      <p class="form-section-title">Employee details</p>
       <div class="field">
-        <label>Имя и фамилия</label>
-        <input type="text" id="inp-name" value="Sebastian Gomez Nohava" placeholder="Имя Фамилия">
+        <label>Full name</label>
+        <input type="text" id="inp-name" value="Sebastian Gomez Nohava" placeholder="First Last">
       </div>
       <div class="field">
-        <label>Должность</label>
-        <input type="text" id="inp-role" value="Sales Development Support" placeholder="Должность">
+        <label>Job title</label>
+        <input type="text" id="inp-role" value="Sales Development Support" placeholder="Job title">
       </div>
       <div class="field">
-        <label>Страна / локация</label>
-        <input type="text" id="inp-country" value="Colombia" placeholder="Страна">
+        <label>Country / location</label>
+        <input type="text" id="inp-country" value="Colombia" placeholder="Country">
       </div>
       <div class="field">
-        <label>Фото сотрудника</label>
+        <label>Employee photo</label>
         <div class="photo-upload" id="photo-drop">
           <input type="file" accept="image/*" id="photo-input">
           <img id="photo-preview" src="" alt="">
           <div id="upload-placeholder">
             <div class="photo-upload-icon">🖼️</div>
-            <p><strong>Загрузить фото</strong> или перетащи сюда</p>
-            <p style="font-size:11px;margin-top:4px">JPG, PNG — квадратное предпочтительно</p>
+            <p><strong>Upload photo</strong> or drag here</p>
+            <p style="font-size:11px;margin-top:4px">JPG, PNG — square preferred</p>
           </div>
         </div>
       </div>
       <hr class="divider">
-      <p class="form-section-title">Стиль карточки</p>
+      <p class="form-section-title">Card style</p>
       <div class="field">
-        <label>Тема</label>
+        <label>Theme</label>
         <div class="theme-toggle">
-          <button class="theme-btn active" data-theme="light" onclick="setTheme('light')">☀️ Светлая</button>
-          <button class="theme-btn" data-theme="dark" onclick="setTheme('dark')">🌙 Синяя</button>
+          <button class="theme-btn active" data-theme="light" onclick="setTheme('light')">☀️ Light</button>
+          <button class="theme-btn" data-theme="dark" onclick="setTheme('dark')">🌙 Dark</button>
         </div>
       </div>
-      <button class="btn-download" onclick="downloadCard()">⬇ Скачать PNG</button>
+      <button class="btn-download" onclick="downloadCard()">⬇ Download PNG</button>
     </div>
     <div class="preview-panel">
       <div>
-        <p class="preview-label">Предпросмотр карточки</p>
+        <p class="preview-label">Card preview</p>
         <div id="card-canvas-wrapper">
           <canvas id="card" width="1170" height="460"></canvas>
         </div>
-        <p class="hint">1170 × 460 px · обновляется автоматически</p>
+        <p class="hint">1170 × 460 px · updates automatically</p>
       </div>
     </div>
   </div>
@@ -285,13 +285,13 @@ function render() {
   // ── Name + Role ──
   const nameY = H - 118;
   ctx.fillStyle = dark ? '#fff' : '#1a1d2e';
-  ctx.font = 'bold 46px SuisseIntl, sans-serif';
+  ctx.font = 'bold 40px SuisseIntl, sans-serif';
   ctx.textBaseline = 'alphabetic';
-  ctx.fillText(state.name || 'Имя Фамилия', padX, nameY);
+  ctx.fillText(state.name || 'First Last', padX, nameY);
 
   ctx.fillStyle = dark ? 'rgba(160,185,255,0.9)' : '#3d5af1';
-  ctx.font = 'bold 34px SuisseIntl, sans-serif';
-  ctx.fillText(state.role || 'Должность', padX, nameY + 52);
+  ctx.font = 'bold 30px SuisseIntl, sans-serif';
+  ctx.fillText(state.role || 'Job title', padX, nameY + 52);
 
   // ── Photo area ──
   const photoX = W - 320 - 48;
@@ -335,7 +335,7 @@ function render() {
     ctx.font = '18px SuisseIntl, sans-serif';
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'center';
-    ctx.fillText('Фото сотрудника', photoX + photoW / 2, photoY + photoH / 2);
+    ctx.fillText('Employee photo', photoX + photoW / 2, photoY + photoH / 2);
     ctx.textAlign = 'left';
   }
 }
