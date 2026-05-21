@@ -227,8 +227,11 @@ function render() {
   }
 
   // ── Photos area ──
-  // Fixed photo area: start after date, leave 50px at bottom
-  const photoTop  = dateY + (dateStr ? 70 : 20);
+  // photoTop accounts for possible 2-line title: add extra safe gap
+  const titleLineH = Math.round(titleSize * 1.1);
+  const twoLineTitleBottom = titleY + titleLineH * 2 + 60; // worst case: 2 lines + date
+  const photoTopBase = dateY + (dateStr ? 80 : 40);
+  const photoTop  = Math.max(photoTopBase, twoLineTitleBottom);
   const photoBot  = H - 50;
   const photoAreaH = photoBot - photoTop;
 
@@ -247,29 +250,18 @@ function render() {
     ctx.textAlign = 'left';
 
   } else if (count === 1) {
-    // Full-bleed cutout bottom-right, fading left
+    // Single person — 2-person width, tall rectangle, equal margins all sides
     const p = persons[0];
-    const photoW = Math.round(W * 0.56);
-    const ph = photoBot - photoTop;
-    const photoX = W - photoW;
-    if (p.img) {
-      drawPhoto(p.img, photoX, photoTop, photoW, ph, 0);
-      // left fade
-      const fade = ctx.createLinearGradient(photoX, 0, photoX + 200, 0);
-      fade.addColorStop(0, 'rgba(42,58,220,1)');
-      fade.addColorStop(1, 'rgba(42,58,220,0)');
-      ctx.fillStyle = fade;
-      ctx.fillRect(photoX, photoTop, 200, ph);
-    }
-    // bottom fade so it bleeds into edge
-    const btmFade = ctx.createLinearGradient(0, photoBot - 80, 0, photoBot);
-    btmFade.addColorStop(0, 'rgba(42,58,220,0)');
-    btmFade.addColorStop(1, 'rgba(42,58,220,0.5)');
-    ctx.fillStyle = btmFade;
-    ctx.fillRect(photoX, photoBot - 80, photoW, 80);
-
-    // Name tag bottom left
-    drawNameTag(p.name||'Имя', p.role||'Job title', padX, photoBot - nameTagH - 10);
+    const cardW = Math.floor((W - padX*2 - 24) / 2);
+    const maxCardH = photoBot - photoTop - nameTagH - nameTagGap - padX; // leave bottom margin = padX
+    const idealH = Math.round(cardW * 1.35); // ~3:4 portrait
+    const ch = Math.min(idealH, maxCardH);
+    const cx = padX;
+    const cy = photoTop;
+    ctx.fillStyle = 'rgba(100,130,255,0.18)';
+    roundRect(cx, cy, cardW, ch, 18); ctx.fill();
+    if (p.img) drawPhoto(p.img, cx, cy, cardW, ch, 18);
+    drawNameTag(p.name||'First Last', p.role||'Job title', cx, cy + ch + nameTagGap);
 
   } else if (count === 2) {
     const gap = 24;
@@ -281,7 +273,7 @@ function render() {
       ctx.fillStyle = 'rgba(100,130,255,0.18)';
       roundRect(cx, cy, cardW, cardH, 18); ctx.fill();
       if (p.img) drawPhoto(p.img, cx, cy, cardW, cardH, 18);
-      drawNameTag(p.name||'Имя', p.role||'Job title', cx, cy + cardH + nameTagGap);
+      drawNameTag(p.name||'First Last', p.role||'Job title', cx, cy + cardH + nameTagGap);
     }
 
   } else {
@@ -294,7 +286,7 @@ function render() {
       ctx.fillStyle = 'rgba(100,130,255,0.18)';
       roundRect(cx, cy, cardW, cardH, 18); ctx.fill();
       if (p.img) drawPhoto(p.img, cx, cy, cardW, cardH, 18);
-      drawNameTag(p.name||'Имя', p.role||'Job title', cx, cy + cardH + nameTagGap);
+      drawNameTag(p.name||'First Last', p.role||'Job title', cx, cy + cardH + nameTagGap);
     }
   }
 }
