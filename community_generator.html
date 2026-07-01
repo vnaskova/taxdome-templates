@@ -424,20 +424,41 @@ document.getElementById('accentBtn').addEventListener('click', () => {
   const container = document.getElementById('richInput');
   if (!container.contains(range.commonAncestorContainer)) return;
 
-  // Check if already fully accented
-  const frag = range.cloneContents();
-  const nodes = [...frag.childNodes];
-  const allAccent = nodes.length > 0 && nodes.every(n =>
-    (n.nodeType === Node.TEXT_NODE && n.textContent.trim() === '') ||
-    (n.nodeType === Node.ELEMENT_NODE && n.classList.contains('accent'))
-  );
+  // Walk up from start container to see if we're inside an accent span
+  function getAccentAncestor(node) {
+    while (node && node !== container) {
+      if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains('accent')) return node;
+      node = node.parentNode;
+    }
+    return null;
+  }
 
-  if (allAccent) {
-    // Remove accent: replace with plain text
-    const selectedText = range.toString();
-    range.deleteContents();
-    range.insertNode(document.createTextNode(selectedText));
+  // Collect all .accent spans that overlap with the selection
+  function getOverlappingAccents() {
+    const spans = [...container.querySelectorAll('.accent')];
+    return spans.filter(span => {
+      const spanRange = document.createRange();
+      spanRange.selectNode(span);
+      return range.compareBoundaryPoints(Range.END_TO_START, spanRange) < 0 &&
+             range.compareBoundaryPoints(Range.START_TO_END, spanRange) > 0;
+    });
+  }
+
+  const accentAncestor = getAccentAncestor(range.startContainer);
+  const overlapping = getOverlappingAccents();
+
+  if (accentAncestor || overlapping.length > 0) {
+    // REMOVE accent mode
+    // Unwrap all overlapping accent spans by replacing them with their text content
+    const toUnwrap = accentAncestor ? [accentAncestor, ...overlapping] : overlapping;
+    const unique = [...new Set(toUnwrap)];
+    unique.forEach(span => {
+      const parent = span.parentNode;
+      while (span.firstChild) parent.insertBefore(span.firstChild, span);
+      parent.removeChild(span);
+    });
   } else {
+    // ADD accent mode
     const span = document.createElement('span');
     span.className = 'accent';
     try {
@@ -448,6 +469,7 @@ document.getElementById('accentBtn').addEventListener('click', () => {
       range.insertNode(span);
     }
   }
+
   sel.removeAllRanges();
   container.normalize();
   scheduleRender();
