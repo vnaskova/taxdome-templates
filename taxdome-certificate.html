@@ -195,13 +195,13 @@ function render(id) {
 
   // ── "This certificate is awarded to" + date ───────────────
   const awardedY = divY + GAP;
-  ctx.fillStyle = '#67768B';
+  ctx.fillStyle = '#646464';
   ctx.font = `500 36px Arial, sans-serif`;
   ctx.textAlign = 'left';
   ctx.fillText('Awarded to', contentLeft, awardedY);
 
   if (date) {
-    ctx.fillStyle = '#9CA3AF';
+    ctx.fillStyle = '#646464';
     ctx.font = `400 36px Arial, sans-serif`;
     ctx.textAlign = 'right';
     ctx.fillText(date, contentRight, awardedY);
@@ -279,7 +279,7 @@ function render(id) {
       let x = contentLeft;
       slice.forEach((t, i) => {
         ctx.font = t.bold ? boldFont : bodyFont;
-        ctx.fillStyle = t.bold ? '#0F1A2A' : '#67768B';
+        ctx.fillStyle = t.bold ? '#0F1A2A' : '#646464';
         ctx.fillText(t.text, x, y);
         x += t.width + spaceW;
       });
@@ -314,7 +314,7 @@ function render(id) {
     ctx.textAlign = 'left';
     ctx.fillText(name, sx, sigY + 10);
     // title
-    ctx.fillStyle = '#67768B';
+    ctx.fillStyle = '#646464';
     ctx.font = `400 ${SEC - 4}px Arial, sans-serif`;
     ctx.fillText(title, sx, sigY + 10 + SEC + 4);
   });
