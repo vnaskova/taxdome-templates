@@ -196,6 +196,9 @@
         <div class="tag-option" data-tag="Announcement" data-color="#D0B8FF" data-text-color="#1a0a3c">
           <div class="tag-swatch" style="background:#D0B8FF"></div><span class="tag-name">Announce</span>
         </div>
+        <div class="tag-option" data-tag="Event"        data-color="#FFCB0D" data-text-color="#1a1200">
+          <div class="tag-swatch" style="background:#FFCB0D"></div><span class="tag-name">Event</span>
+        </div>
         <div class="tag-option" data-tag="Custom"       data-color="#E2E4EF" data-text-color="#1a1a2e">
           <div class="tag-swatch" style="background:#E2E4EF"></div><span class="tag-name">Custom</span>
         </div>
@@ -238,7 +241,7 @@
 
   <div class="preview-wrap">
     <div class="preview-label">Preview — 830 × 300 px</div>
-    <canvas id="canvas" width="830" height="300"></canvas>
+    <canvas id="canvas" width="1660" height="600"></canvas>
     <div class="size-hint">Suisse Intl embedded · pixel-perfect PNG export</div>
   </div>
 </div>
@@ -292,7 +295,7 @@ function parseRichInput() {
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-const HEAD_FONT_SIZE = 54;
+const HEAD_FONT_SIZE = 48;
 const HEAD_LS_EM = -0.02;
 const HEAD_LH_RATIO = 0.90;
 const HEAD_WEIGHT = 600;
@@ -362,15 +365,46 @@ function layoutLines(tokens, maxWidth) {
     cur = []; curW = 0;
   }
 
+  // Split a single long word into chunks that fit maxWidth
+  function splitLongWord(word) {
+    const chunks = [];
+    let chunk = '';
+    for (const ch of word.text) {
+      const testW = measureW(chunk + ch, HEAD_FONT_SIZE, HEAD_WEIGHT, HEAD_LS_EM);
+      if (testW > maxWidth && chunk.length > 0) {
+        chunks.push({text: chunk, accent: word.accent});
+        chunk = ch;
+      } else {
+        chunk += ch;
+      }
+    }
+    if (chunk) chunks.push({text: chunk, accent: word.accent});
+    return chunks;
+  }
+
   words.forEach((w, i) => {
     if (w.brk) { pushLine(); return; }
     if (w.sp) { cur.push(w); curW += spW; return; }
+
     const ww = measureW(w.text, HEAD_FONT_SIZE, HEAD_WEIGHT, HEAD_LS_EM);
+
+    // Long word that doesn't fit even on empty line — split by chars
+    if (ww > maxWidth) {
+      if (cur.length > 0) pushLine();
+      const chunks = splitLongWord(w);
+      chunks.forEach((chunk, ci) => {
+        const cw = measureW(chunk.text, HEAD_FONT_SIZE, HEAD_WEIGHT, HEAD_LS_EM);
+        if (curW + cw > maxWidth && cur.length > 0) pushLine();
+        cur.push(chunk); curW += cw;
+      });
+      return;
+    }
+
     if (curW + ww > maxWidth && cur.length > 0) pushLine();
     cur.push(w); curW += ww;
   });
   pushLine();
-  return lines;
+  return lines.slice(0, 3);
 }
 
 function renderLines(lines, cx, startY, dark) {
@@ -399,6 +433,7 @@ function scheduleRender() {
 function render() {
   rafId = null;
   const W = 830, H = 300;
+  ctx.setTransform(2, 0, 0, 2, 0, 0);
   ctx.clearRect(0, 0, W, H);
   if (loadedImgs[state.bg]) ctx.drawImage(loadedImgs[state.bg], 0, 0, W, H);
   else { ctx.fillStyle = '#d8e4f5'; ctx.fillRect(0, 0, W, H); }
@@ -407,7 +442,7 @@ function render() {
   const cx = W / 2;
   const tagLabel = state.tag === 'Custom' ? (state.customTag || 'Tag') : state.tag;
   const tokens = parseRichInput();
-  const lines = layoutLines(tokens, 580);
+  const lines = layoutLines(tokens, 700);
   const lh = HEAD_FONT_SIZE * HEAD_LH_RATIO;
   const pillHEstimate = TAG_FONT_SIZE + 22;
   const totalH = pillHEstimate + 18 + lines.length * lh;
