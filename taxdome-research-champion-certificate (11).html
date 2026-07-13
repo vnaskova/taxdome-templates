@@ -77,7 +77,7 @@ shape the future of accounting</textarea>
 
 <script>
 const W = 1920, H = 1358; // A4 landscape ratio (297:210)
-const cardX = 60, cardY = 60, cardW = 1650, cardH = H - 120;
+const cardX = 60, cardY = 60, cardW = 1450, cardH = H - 120;
 const SEC = 38, GAP = 100;
 const PADX = 52;
 const contentLeft = cardX + PADX, contentRight = cardX + cardW - PADX;
@@ -175,9 +175,10 @@ function render() {
 
   // ── Logo, top-right — white ───────────────────────────────────
   const stripLeft = cardX + cardW, stripRight = W;
-  const logoH = 90, logoW = logoH * (hexIconImg.width / hexIconImg.height);
-  const logoCx = stripLeft + (stripRight - stripLeft) / 2;
-  const logoCy = cardY + 52;
+  const logoH = 120, logoW = logoH * (hexIconImg.width / hexIconImg.height);
+  const logoMargin = 55; // same distance from the top edge and the right edge
+  const logoCx = W - logoMargin - logoW / 2;
+  const logoCy = logoMargin + logoH / 2;
   ctx.drawImage(hexIconImg, logoCx - logoW / 2, logoCy - logoH / 2, logoW, logoH);
 
   // ── Divider — right under the breadcrumb ────────────────────
@@ -270,7 +271,7 @@ function render() {
   const sig2X = contentRight - sigW;
 
   // ── Stamp, straddling the card edge, above the signature ──────
-  const stampH = 360, stampW = stampH * (stampImg.width / stampImg.height);
+  const stampH = 480, stampW = stampH * (stampImg.width / stampImg.height);
   const stampCx = cardX + cardW - 120;   // shifted further left
   const stampCy = sigY - 420;            // shifted further up
   ctx.drawImage(stampImg, stampCx - stampW / 2, stampCy - stampH / 2, stampW, stampH);
